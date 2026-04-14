@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUAP — Relatório de Projetos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #00a651;
+    --verde-escuro: #007a3d;
+    --verde-claro: #e8f8f0;
+    --cinza-fundo: #f4f5f7;
+    --cinza-borda: #d0d5dd;
+    --texto: #1a1f2e;
+    --texto-suave: #6b7280;
+    --branco: #ffffff;
+    --vermelho: #e03434;
+    --amarelo: #f5a623;
+    --azul: #1a5276;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--cinza-fundo);
+    color: var(--texto);
+    min-height: 100vh;
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    background: var(--azul);
+    color: white;
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+  }
+
+  .logo-badge {
+    background: var(--verde);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  #usuario-info {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #btn-sair {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 5px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  #btn-sair:hover { background: rgba(255,255,255,0.25); }
+
+  /* ---- MAIN ---- */
+  main {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* ---- TELA LOGIN ---- */
+  #tela-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 60px);
+  }
+
+  .login-card {
+    background: white;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  }
+
+  .login-card h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  .login-card p.subtitulo {
+    font-size: 0.88rem;
+    color: var(--texto-suave);
+    margin-bottom: 1.8rem;
+  }
+
+  .campo {
+    margin-bottom: 1.2rem;
+  }
+
+  .campo label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--texto-suave);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .campo input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--cinza-borda);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: var(--texto);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .campo input:focus { border-color: var(--azul); }
+
+  .btn-primario {
+    width: 100%;
+    padding: 12px;
+    background: var(--azul);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+  .btn-primario:hover { background: #154360; }
+  .btn-primario:active { transform: scale(0.98); }
+  .btn-primario:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* ---- TELA PRINCIPAL ---- */
+  #tela-principal { display: none; }
+
+  .barra-busca {
+    background: white;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .barra-busca .campo {
+    margin-bottom: 0;
+    flex: 0 0 180px;
+  }
+
+  .btn-buscar {
+    padding: 10px 24px;
+    background: var(--verde);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .btn-buscar:hover { background: var(--verde-escuro); }
+  .btn-buscar:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-exportar {
+    padding: 10px 20px;
+    background: white;
+    color: var(--azul);
+    border: 2px solid var(--azul);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    margin-left: auto;
+  }
+  .btn-exportar:hover { background: var(--azul); color: white; }
+  .btn-exportar:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ---- PROGRESSO ---- */
+  #area-progresso {
+    background: white;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
+
+  .progresso-titulo {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .barra-externa {
+    background: var(--cinza-fundo);
+    border-radius: 20px;
+    height: 10px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+  }
+
+  .barra-interna {
+    height: 100%;
+    background: linear-gradient(90deg, var(--verde), #00c76a);
+    border-radius: 20px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progresso-log {
+    font-size: 0.82rem;
+    color: var(--texto-suave);
+    font-family: 'IBM Plex Mono', monospace;
+    max-height: 120px;
+    overflow-y: auto;
+    line-height: 1.6;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--verde-claro);
+    border-top-color: var(--verde);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- ALERTA ---- */
+  .alerta {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    margin-top: 1rem;
+    display: none;
+  }
+  .alerta-erro { background: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c; }
+  .alerta-ok { background: var(--verde-claro); border: 1px solid #a7f3c5; color: var(--verde-escuro); }
+
+  /* ---- ESTATÍSTICAS ---- */
+  #area-stats {
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+  .stat-card .numero {
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-card .label { font-size: 0.8rem; color: var(--texto-suave); }
+  .stat-verde .numero { color: var(--verde-escuro); }
+  .stat-vermelho .numero { color: var(--vermelho); }
+  .stat-amarelo .numero { color: var(--amarelo); }
+  .stat-azul .numero { color: var(--azul); }
+
+  /* ---- TABELA ---- */
+  #area-tabela {
+    display: none;
+    background: white;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .tabela-cabecalho {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .tabela-titulo {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  #campo-filtro {
+    padding: 8px 12px;
+    border: 1.5px solid var(--cinza-borda);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-family: 'IBM Plex Sans', sans-serif;
+    outline: none;
+    width: 260px;
+    transition: border-color 0.2s;
+  }
+  #campo-filtro:focus { border-color: var(--azul); }
+
+  .tabela-container { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  thead th {
+    background: var(--azul);
+    color: white;
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    position: sticky;
+    top: 60px;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: var(--verde-claro); }
+  tbody tr:nth-child(even) { background: #fafbfc; }
+  tbody tr:nth-child(even):hover { background: var(--verde-claro); }
+
+  tbody td {
+    padding: 10px 14px;
+    vertical-align: top;
+    max-width: 0;
+  }
+
+  .col-nome { min-width: 220px; max-width: 320px; }
+  .col-coord { min-width: 140px; max-width: 200px; }
+  .col-num { min-width: 60px; text-align: center; }
+  .col-pend { min-width: 240px; max-width: 340px; }
+
+  .celula-texto {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    max-width: 300px;
+    display: block;
+  }
+  .celula-texto.expandido { white-space: pre-wrap; overflow: visible; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .badge-0 { background: #dcfce7; color: #166534; }
+  .badge-baixo { background: #fef9c3; color: #854d0e; }
+  .badge-alto { background: #fee2e2; color: #991b1b; }
+
+  .link-proj {
+    color: var(--azul);
+    text-decoration: none;
+    font-size: 0.78rem;
+    opacity: 0.7;
+  }
+  .link-proj:hover { opacity: 1; text-decoration: underline; }
+
+  .nome-proj { font-weight: 500; display: block; margin-bottom: 2px; }
+
+  .carregando-cell {
+    color: var(--texto-suave);
+    font-style: italic;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mini-spinner {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid #ddd;
+    border-top-color: var(--verde);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .pend-item {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.78rem;
+    color: var(--texto-suave);
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    #area-stats { grid-template-columns: repeat(2, 1fr); }
+    .barra-busca { flex-wrap: wrap; }
+    .barra-busca .campo { flex: 1 1 140px; }
+    #campo-filtro { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-badge">SUAP</span>
+    Relatório de Projetos em Execução
+  </div>
+  <div id="usuario-info">
+    <span id="label-usuario"></span>
+    <button id="btn-sair">Sair</button>
+  </div>
+</header>
+
+<!-- ===== TELA LOGIN ===== -->
+<div id="tela-login">
+  <div class="login-card">
+    <h2>Acesso ao Sistema</h2>
+    <p class="subtitulo">Use suas credenciais do SUAP/IFPI para entrar</p>
+
+    <div class="campo">
+      <label>Usuário</label>
+      <input type="text" id="inp-usuario" placeholder="seu.usuario" autocomplete="username">
+    </div>
+    <div class="campo">
+      <label>Senha</label>
+      <input type="password" id="inp-senha" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <div id="alerta-login" class="alerta alerta-erro"></div>
+
+    <button class="btn-primario" id="btn-login">Entrar</button>
+  </div>
+</div>
+
+<!-- ===== TELA PRINCIPAL ===== -->
+<div id="tela-principal">
+  <main>
+
+    <!-- Barra de busca -->
+    <div class="barra-busca">
+      <div class="campo">
+        <label>Ano</label>
+        <input type="number" id="inp-ano" min="2017" max="2026"
+               placeholder="Ex: 2024" value="2024">
+      </div>
+      <button class="btn-buscar" id="btn-buscar">🔍 Buscar Projetos</button>
+      <button class="btn-exportar" id="btn-exportar" disabled>⬇ Exportar Excel</button>
+    </div>
+
+    <!-- Progresso -->
+    <div id="area-progresso">
+      <div class="progresso-titulo">
+        <span class="spinner"></span>
+        <span id="progresso-texto">Carregando...</span>
+      </div>
+      <div class="barra-externa">
+        <div class="barra-interna" id="barra-interna"></div>
+      </div>
+      <div class="progresso-log" id="progresso-log"></div>
+    </div>
+
+    <!-- Stats -->
+    <div id="area-stats" style="display:none; grid-template-columns: repeat(4,1fr);">
+      <div class="stat-card stat-azul">
+        <div class="numero" id="st-total">0</div>
+        <div class="label">Projetos encontrados</div>
+      </div>
+      <div class="stat-card stat-vermelho">
+        <div class="numero" id="st-pend-gerais">0</div>
+        <div class="label">Com pendências gerais</div>
+      </div>
+      <div class="stat-card stat-amarelo">
+        <div class="numero" id="st-pend-conc">0</div>
+        <div class="label">Com pendências de conclusão</div>
+      </div>
+      <div class="stat-card stat-verde">
+        <div class="numero" id="st-metas">0</div>
+        <div class="label">Com metas pendentes</div>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div id="area-tabela">
+      <div class="tabela-cabecalho">
+        <div class="tabela-titulo" id="tabela-titulo">Projetos</div>
+        <input type="text" id="campo-filtro" placeholder="🔍 Filtrar por nome ou coordenador...">
+      </div>
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Projeto</th>
+              <th>Coordenador</th>
+              <th class="col-num">Pend. Gerais</th>
+              <th>Detalhes Pendências Gerais</th>
+              <th class="col-num">Pend. Conclusão</th>
+              <th>Detalhes Pend. Conclusão</th>
+              <th class="col-num">Metas Pend.</th>
+              <th>Metas Pendentes</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+  <footer>SUAP IFPI — Relatório de Projetos em Execução</footer>
+</div>
+
+<script>
+let TOKEN = null;
+let PROJETOS_COMPLETOS = [];
+let ANO_ATUAL = null;
+
+// ---- LOGIN ----
+document.getElementById("btn-login").addEventListener("click", fazerLogin);
+document.getElementById("inp-senha").addEventListener("keydown", e => {
+  if (e.key === "Enter") fazerLogin();
+});
+
+async function fazerLogin() {
+  const usuario = document.getElementById("inp-usuario").value.trim();
+  const senha = document.getElementById("inp-senha").value;
+  const alerta = document.getElementById("alerta-login");
+  const btn = document.getElementById("btn-login");
+
+  alerta.style.display = "none";
+  if (!usuario || !senha) {
+    mostrarAlerta(alerta, "Preencha usuário e senha.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Autenticando...";
+
+  try {
+    const r = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario, senha })
+    });
+    const data = await r.json();
+
+    if (!r.ok) {
+      mostrarAlerta(alerta, data.error || "Falha no login.");
+      return;
+    }
+
+    TOKEN = data.token;
+    document.getElementById("label-usuario").textContent = "👤 " + usuario;
+    document.getElementById("usuario-info").style.display = "flex";
+    document.getElementById("tela-login").style.display = "none";
+    document.getElementById("tela-principal").style.display = "block";
+
+  } catch(e) {
+    mostrarAlerta(alerta, "Erro de conexão com o servidor.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Entrar";
+  }
+}
+
+function mostrarAlerta(el, msg) {
+  el.textContent = msg;
+  el.style.display = "block";
+}
+
+// ---- SAIR ----
+document.getElementById("btn-sair").addEventListener("click", () => {
+  TOKEN = null;
+  PROJETOS_COMPLETOS = [];
+  document.getElementById("tela-login").style.display = "flex";
+  document.getElementById("tela-principal").style.display = "none";
+  document.getElementById("usuario-info").style.display = "none";
+  document.getElementById("inp-usuario").value = "";
+  document.getElementById("inp-senha").value = "";
+  document.getElementById("area-stats").style.display = "none";
+  document.getElementById("area-tabela").style.display = "none";
+  document.getElementById("area-progresso").style.display = "none";
+  document.getElementById("btn-exportar").disabled = true;
+});
+
+// ---- BUSCAR ----
+document.getElementById("btn-buscar").addEventListener("click", buscarProjetos);
+
+async function buscarProjetos() {
+  const ano = parseInt(document.getElementById("inp-ano").value);
+  if (!ano || ano < 2017 || ano > 2026) {
+    alert("Informe um ano entre 2017 e 2026.");
+    return;
+  }
+
+  ANO_ATUAL = ano;
+  PROJETOS_COMPLETOS = [];
+
+  const btnBuscar = document.getElementById("btn-buscar");
+  const btnExp = document.getElementById("btn-exportar");
+  btnBuscar.disabled = true;
+  btnExp.disabled = true;
+
+  document.getElementById("area-stats").style.display = "none";
+  document.getElementById("area-tabela").style.display = "none";
+  document.getElementById("corpo-tabela").innerHTML = "";
+
+  // Mostrar progresso
+  const prog = document.getElementById("area-progresso");
+  const barraI = document.getElementById("barra-interna");
+  const progLog = document.getElementById("progresso-log");
+  const progTxt = document.getElementById("progresso-texto");
+
+  prog.style.display = "block";
+  barraI.style.width = "0%";
+  progLog.innerHTML = "";
+  progTxt.textContent = `Buscando projetos de ${ano}...`;
+
+  function log(msg) {
+    progLog.innerHTML += msg + "\n";
+    progLog.scrollTop = progLog.scrollHeight;
+  }
+
+  try {
+    // 1) Buscar lista de projetos
+    log(`→ Conectando ao SUAP...`);
+    const r = await fetch(`/api/projetos?ano=${ano}`, {
+      headers: { "X-Session-Token": TOKEN }
+    });
+    const data = await r.json();
+
+    if (!r.ok) {
+      alert(data.error || "Erro ao buscar projetos.");
+      prog.style.display = "none";
+      btnBuscar.disabled = false;
+      return;
+    }
+
+    const projetos = data.projetos;
+    log(`✔ ${projetos.length} projetos encontrados`);
+
+    if (projetos.length === 0) {
+      progTxt.textContent = "Nenhum projeto em execução neste ano.";
+      barraI.style.width = "100%";
+      btnBuscar.disabled = false;
+      return;
+    }
+
+    // Montar tabela imediatamente (sem detalhes ainda)
+    document.getElementById("area-tabela").style.display = "block";
+    document.getElementById("tabela-titulo").textContent =
+      `${projetos.length} projetos em execução — ${ano}`;
+
+    const corpo = document.getElementById("corpo-tabela");
+    for (const p of projetos) {
+      const tr = document.createElement("tr");
+      tr.id = `tr-${p.id}`;
+      tr.innerHTML = `
+        <td>${projetos.indexOf(p) + 1}</td>
+        <td class="col-nome">
+          <span class="nome-proj">${escapar(p.nome)}</span>
+          <a class="link-proj" href="${p.url}" target="_blank">↗ abrir no SUAP</a>
+        </td>
+        <td class="col-coord">${escapar(p.coordenador)}</td>
+        <td class="col-num" id="n-g-${p.id}">
+          <span class="carregando-cell"><span class="mini-spinner"></span></span>
+        </td>
+        <td class="col-pend" id="d-g-${p.id}">
+          <span class="carregando-cell"><span class="mini-spinner"></span> carregando...</span>
+        </td>
+        <td class="col-num" id="n-c-${p.id}">
+          <span class="carregando-cell"><span class="mini-spinner"></span></span>
+        </td>
+        <td class="col-pend" id="d-c-${p.id}">
+          <span class="carregando-cell"><span class="mini-spinner"></span> carregando...</span>
+        </td>
+        <td class="col-num" id="n-m-${p.id}">
+          <span class="carregando-cell"><span class="mini-spinner"></span></span>
+        </td>
+        <td class="col-pend" id="d-m-${p.id}">
+          <span class="carregando-cell"><span class="mini-spinner"></span> carregando...</span>
+        </td>
+      `;
+      corpo.appendChild(tr);
+      PROJETOS_COMPLETOS.push({ ...p });
+    }
+
+    // 2) Buscar detalhes de cada projeto
+    progTxt.textContent = `Carregando detalhes dos ${projetos.length} projetos...`;
+
+    for (let i = 0; i < projetos.length; i++) {
+      const p = projetos[i];
+      log(`→ [${i+1}/${projetos.length}] ${p.nome.substring(0, 60)}...`);
+      barraI.style.width = ((i / projetos.length) * 100) + "%";
+
+      try {
+        const rd = await fetch(`/api/detalhes/${p.id}`, {
+          headers: { "X-Session-Token": TOKEN }
+        });
+        const det = await rd.json();
+
+        if (rd.ok) {
+          // Atualizar objeto
+          PROJETOS_COMPLETOS[i] = { ...p, ...det };
+
+          // Pendências gerais
+          const ng = det.pendencias_gerais.length;
+          document.getElementById(`n-g-${p.id}`).innerHTML =
+            `<span class="badge ${classeBadge(ng)}">${ng}</span>`;
+          document.getElementById(`d-g-${p.id}`).innerHTML =
+            ng > 0 ? `<span class="pend-item">${escapar(det.pendencias_gerais.join("\n"))}</span>` : "—";
+
+          // Pendências conclusão
+          const nc = det.pendencias_conclusao.length;
+          document.getElementById(`n-c-${p.id}`).innerHTML =
+            `<span class="badge ${classeBadge(nc)}">${nc}</span>`;
+          document.getElementById(`d-c-${p.id}`).innerHTML =
+            nc > 0 ? `<span class="pend-item">${escapar(det.pendencias_conclusao.join("\n"))}</span>` : "—";
+
+          // Metas pendentes
+          const nm = det.metas_pendentes.length;
+          document.getElementById(`n-m-${p.id}`).innerHTML =
+            `<span class="badge ${classeBadge(nm)}">${nm}</span>`;
+          document.getElementById(`d-m-${p.id}`).innerHTML =
+            nm > 0 ? `<span class="pend-item">${escapar(det.metas_pendentes.join("\n"))}</span>` : "—";
+
+        } else {
+          ["n-g","d-g","n-c","d-c","n-m","d-m"].forEach(prefix => {
+            const el = document.getElementById(`${prefix}-${p.id}`);
+            if(el) el.innerHTML = '<span style="color:#999;font-size:0.75rem">erro</span>';
+          });
+        }
+      } catch(e) {
+        log(`  ⚠ Erro ao carregar ${p.nome}`);
+      }
+
+      // Pequena pausa para não sobrecarregar
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    barraI.style.width = "100%";
+    progTxt.textContent = `✅ ${projetos.length} projetos carregados!`;
+    log(`✅ Concluído!`);
+
+    setTimeout(() => { prog.style.display = "none"; }, 3000);
+
+    // Estatísticas
+    atualizarStats();
+
+    btnExp.disabled = false;
+
+  } catch(e) {
+    alert("Erro inesperado: " + e.message);
+  } finally {
+    btnBuscar.disabled = false;
+  }
+}
+
+function classeBadge(n) {
+  if (n === 0) return "badge-0";
+  if (n <= 2) return "badge-baixo";
+  return "badge-alto";
+}
+
+function atualizarStats() {
+  const total = PROJETOS_COMPLETOS.length;
+  const comPG = PROJETOS_COMPLETOS.filter(p => (p.pendencias_gerais||[]).length > 0).length;
+  const comPC = PROJETOS_COMPLETOS.filter(p => (p.pendencias_conclusao||[]).length > 0).length;
+  const comMP = PROJETOS_COMPLETOS.filter(p => (p.metas_pendentes||[]).length > 0).length;
+
+  document.getElementById("st-total").textContent = total;
+  document.getElementById("st-pend-gerais").textContent = comPG;
+  document.getElementById("st-pend-conc").textContent = comPC;
+  document.getElementById("st-metas").textContent = comMP;
+
+  const statsEl = document.getElementById("area-stats");
+  statsEl.style.display = "grid";
+  statsEl.style.gridTemplateColumns = "repeat(4,1fr)";
+}
+
+// ---- FILTRO ----
+document.getElementById("campo-filtro").addEventListener("input", function() {
+  const q = this.value.toLowerCase();
+  const trs = document.getElementById("corpo-tabela").querySelectorAll("tr");
+  trs.forEach(tr => {
+    const txt = tr.textContent.toLowerCase();
+    tr.style.display = txt.includes(q) ? "" : "none";
+  });
+});
+
+// ---- EXPORTAR EXCEL ----
+document.getElementById("btn-exportar").addEventListener("click", async () => {
+  const btn = document.getElementById("btn-exportar");
+  btn.disabled = true;
+  btn.textContent = "⏳ Gerando...";
+
+  try {
+    const r = await fetch("/api/exportar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Session-Token": TOKEN
+      },
+      body: JSON.stringify({ projetos: PROJETOS_COMPLETOS, ano: ANO_ATUAL })
+    });
+
+    if (!r.ok) {
+      alert("Erro ao gerar Excel.");
+      return;
+    }
+
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+
+    // Pegar nome do header Content-Disposition
+    const cd = r.headers.get("Content-Disposition") || "";
+    const match = cd.match(/filename="?([^"]+)"?/);
+    a.download = match ? match[1] : `relatorio_suap_${ANO_ATUAL}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+  } catch(e) {
+    alert("Erro ao exportar: " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "⬇ Exportar Excel";
+  }
+});
+
+function escapar(str) {
+  if (!str) return "";
+  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+</script>
+</body>
+</html>
